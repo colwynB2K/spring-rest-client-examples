@@ -27,7 +27,7 @@ public class UserController {
     @PostMapping("/users")
     public String formPost(Model model, ServerWebExchange serverWebExchange){ // In Spring MVC you would use @RequestParam to get the request parameters, but this is the reactive way of doing things
 
-        MultiValueMap<String, String> map = serverWebExchange.getFormData().block(); // TODO: This blocking needs to be cleaned up!
+        /*MultiValueMap<String, String> map = serverWebExchange.getFormData().block(); // TODO: This blocking needs to be cleaned up!
 
         Integer limit = new Integer(map.get("limit").get(0));
 
@@ -38,7 +38,13 @@ public class UserController {
             limit = 10;
         }
 
-        model.addAttribute("users", apiService.getUsers(limit));
+        model.addAttribute("users", apiService.getUsers(limit));*/
+
+        model.addAttribute("users",
+                apiService.getUsers(serverWebExchange
+                                                    .getFormData()
+                                                    .map(data -> new Integer(data.getFirst("limit"))))
+        );
 
         return "users/list";
     }
